@@ -5,23 +5,36 @@
 //   .then(console.log);
 // /
 const weatherBlock = document.querySelector('#weather');
+const searchForm = document.querySelector('#search-form');
 
-async function fetchWeather() {
-  weatherBlock.innerHTML = `
-		<div class="weather__loading">
-			<img src="img/loading.gif" alt="Loading...">
-		</div>`;
+searchForm.addEventListener('submit', onSubmit);
+
+function onSubmit(e) {
+  e.preventDefault();
+  getWeather(e.target.elements.searchQuery.value);
+}
+
+async function fetchWeather(city) {
+  //   weatherBlock.innerHTML = `
+  // 		<div class="weather__loading">
+  // 			<img src="img/loading.gif" alt="Loading...">
+  // 		</div>`;
   return await fetch(
-    'https://api.openweathermap.org/data/2.5/weather?units=metric&q=Izmir&appid=f0a93e06b3355654168e8285eaba51d3'
+    `https://api.openweathermap.org/data/2.5/weather?units=metric&q=${city}&appid=f0a93e06b3355654168e8285eaba51d3`
   ).then(res => {
     return res.json();
   });
 }
 
-function getWeather() {
-  fetchWeather().then(data => markupWeather(data));
+function getWeather(city) {
+  fetchWeather(city)
+    .then(res => markupWeather(res))
+    .catch(onError);
 }
-getWeather();
+
+function onError() {
+  weatherBlock.innerHTML = `city not found`;
+}
 
 function markupWeather(data) {
   console.log(data);
@@ -37,7 +50,7 @@ function markupWeather(data) {
 			<div class="weather__status">${weatherStatus}</div>
 		</div>
 		<div class="weather__icon">
-			<img src="http://openweathermap.org/img/w/${weatherIcon}.png" alt="${weatherStatus}">
+			<img src="http://openweathermap.org/img/w/${weatherIcon}.png" alt="${weatherStatus} width="7px">
 		</div>
 	</div>
 	<div class="weather__temp">${temp}</div>
